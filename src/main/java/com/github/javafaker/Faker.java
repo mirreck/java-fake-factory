@@ -24,17 +24,6 @@ public class Faker extends BaseFaker {
       super(locale, random);
    }
 
-   public String streetName() {
-      return evaluate("address.street_name.formats");
-   }
-
-   public String streetAddress() {
-      return evaluate("address.street_address");
-   }
-
-   public String[] streetAddressWithSecondary() {
-      return new String[] { evaluate("address.street_address"), secondaryAddress()};
-   }
 
    public String name() {
       return evaluate("name.formats");
@@ -67,9 +56,22 @@ public class Faker extends BaseFaker {
       return evaluate("phone_number.formats");
    }
 
+   public String streetName() {
+      return evaluate("address.street_name.formats");
+   }
+   
+   public String streetAddress() {
+      return evaluate("address.street_address");
+   }
+   
    public String secondaryAddress() {
       return evaluate("address.secondary_address");
    }
+
+   public String[] streetAddressWithSecondary() {
+      return new String[] { evaluate("address.street_address"), evaluate("address.secondary_address")};
+   }
+   
 
    public String zipCode() {
       return evaluate("address.postcode");
