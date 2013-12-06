@@ -118,7 +118,6 @@ public class FakerTest {
    public void testHeight() {
       assertThat(fixedSeedFaker.height()).isEqualTo(200);
       assertThat(randomSeedFaker.height()).isNotNull().isNotEqualTo(randomSeedFaker.height());
-
    }
 
    @Test
