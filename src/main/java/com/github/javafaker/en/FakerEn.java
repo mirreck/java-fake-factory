@@ -12,6 +12,7 @@ public class FakerEn extends Faker {
 
    public FakerEn(Random random) {
       super(Locale.ENGLISH, random);
+      this.extend("en_us");
    }
 
    public String state() {

@@ -29,6 +29,8 @@ public class BaseFaker {
 
    private Map<String, Object> fakeValuesMap;
 
+   protected final Locale locale;
+   
    private final Random random;
 
    public BaseFaker(Locale locale) {
@@ -37,12 +39,22 @@ public class BaseFaker {
 
    public BaseFaker(Locale locale, Random random) {
       LOGGER.debug("Using locale " + locale);
+      this.locale = locale;
       String languageCode = locale.getLanguage();
       Map valuesMap = (Map) Yaml.load(BaseFaker.class.getResourceAsStream(languageCode + ".yml"));
       valuesMap = (Map) valuesMap.get(languageCode);
       fakeValuesMap = (Map<String, Object>) valuesMap.get("faker");
 
       this.random = random;
+   }
+   public BaseFaker extend(Locale locale){
+      return extend(locale.getLanguage());
+   }
+   public BaseFaker extend(String localeExtension){
+      Map valuesMap = (Map) Yaml.load(BaseFaker.class.getResourceAsStream(localeExtension + ".yml"));
+      valuesMap = (Map) valuesMap.get(locale.getLanguage());
+      fakeValuesMap.putAll((Map<String, Object>) valuesMap.get("faker"));
+      return this;
    }
 
    public char digit() {
@@ -103,9 +115,73 @@ public class BaseFaker {
       return min + new Double(det * (max - min)).intValue();
    }
 
-   public String evaluate(String key) {
-      // LOGGER.info("evaluate =" + key);
+   /**
+    * Return the object selected by the key from yaml file.
+    * 
+    * @param key key contains path to an object. Path segment is separated by dot. E.g. name.first_name
+    * @return
+    */
+   protected Object fetchObject(String key) {
+      String[] path = key.split("\\.");
+      Object currentValue = fakeValuesMap;
+      for (String pathSection : path) {
+         if (currentValue == null) {
+            return null;
+         }
+         currentValue = ((Map<String, Object>) currentValue).get(pathSection);
+      }
+      return currentValue;
+   }
+   
+   /**
+    * Fetch a random value from an array item specified by the key
+    * 
+    * @param key
+    * @return
+    */
+   protected Object fetch(String key) {
+      List valuesArray = (List) fetchObject(key);
+      if (valuesArray == null) {
+         return null;
+      }
+      return valuesArray.get(nextInt(random, valuesArray.size()));
+   }
+
+   protected String fetchString(String key) {
+      return (String) fetch(key);
+   }
+
+   protected Integer fetchInteger(String key) {
+      return (Integer) fetchObject(key);
+   }
+   
+   protected List<Object> fetchList(String key) {
       Object obj = fetchObject(key);
+      if (!(obj instanceof List< ? >)) {
+         throw new RuntimeException("Fetched Object is not a List. Key="+key);
+      }
+      return (List<Object>) obj;
+   }
+   
+   private static boolean isWeightMap(Object obj) {
+      if (!(obj instanceof Map< ? , ? >)) {
+         return false;
+      }
+      Map< ? , ? > map = (Map< ? , ? >) obj;
+      if (map.isEmpty()) {
+         return false;
+      }
+      return map.keySet().iterator().next() instanceof String && map.values().iterator().next() instanceof Integer;
+   }
+
+   public String evaluate(String key) {
+      Object obj = fetchObject(key);
+      return evaluateObject(obj);
+   }
+   
+   public String evaluateObject(Object obj) {
+      // LOGGER.info("evaluate =" + key);
+      
       if (obj instanceof List< ? >) {
          // LOGGER.info("evaluate (List) =" + key);
          List<String> list = (List<String>) obj;
@@ -123,17 +199,6 @@ public class BaseFaker {
       return null;
    }
 
-   private boolean isWeightMap(Object obj) {
-      if (!(obj instanceof Map< ? , ? >)) {
-         return false;
-      }
-      Map< ? , ? > map = (Map< ? , ? >) obj;
-      if (map.isEmpty()) {
-         return false;
-      }
-      return map.keySet().iterator().next() instanceof String && map.values().iterator().next() instanceof Integer;
-   }
-
    public String evaluatePattern(String pattern) {
       // LOGGER.info("evaluatePattern =" + pattern);
       int prefixIndex = pattern.indexOf(PARAM_PREFIX);
@@ -147,7 +212,6 @@ public class BaseFaker {
          if (replacement == null) {
             replacement = evaluateCall(expression);
          }
-
          return evaluatePattern(pattern.substring(0, prefixIndex) + replacement
                + pattern.substring(suffixIndex + PARAM_SUFFIX.length()));
       }
@@ -166,6 +230,15 @@ public class BaseFaker {
       }
    }
 
+   public String[] evaluateMultipleLines(String key){
+      List list = fetchList(key);
+      List<String> result = new ArrayList<String>(list.size());
+      for (Object line : list) {
+         result.add(evaluateObject(line));
+      }      
+      return result.toArray(new String[result.size()]);
+   }
+
    public String numerify(String numberString) {
       StringBuffer sb = new StringBuffer();
       for (int i = 0; i < numberString.length(); i++) {
@@ -176,7 +249,6 @@ public class BaseFaker {
             sb.append(numberString.charAt(i));
          }
       }
-
       return sb.toString();
    }
 
@@ -190,57 +262,16 @@ public class BaseFaker {
             sb.append(letterString.charAt(i));
          }
       }
-
       return sb.toString();
    }
 
    public String bothify(String string) {
-      // LOGGER.info("bothify =" + string);
       return letterify(numerify(string));
    }
 
-   /**
-    * Fetch a random value from an array item specified by the key
-    * 
-    * @param key
-    * @return
-    */
-   public Object fetch(String key) {
-      List valuesArray = (List) fetchObject(key);
-      if (valuesArray == null) {
-         return null;
-      }
-      return valuesArray.get(nextInt(random, valuesArray.size()));
-   }
 
-   public String fetchString(String key) {
-      return (String) fetch(key);
-   }
-
-   public Integer fetchInteger(String key) {
-      return (Integer) fetchObject(key);
-   }
-
-   /**
-    * Return the object selected by the key from yaml file.
-    * 
-    * @param key key contains path to an object. Path segment is separated by dot. E.g. name.first_name
-    * @return
-    */
-   public Object fetchObject(String key) {
-      String[] path = key.split("\\.");
-      Object currentValue = fakeValuesMap;
-      for (String pathSection : path) {
-         if (currentValue == null) {
-            return null;
-         }
-         currentValue = ((Map<String, Object>) currentValue).get(pathSection);
-      }
-      return currentValue;
-   }
 
    private String toCamelCase(String methodName) {
-      // convert to camel case
       methodName = WordUtils.capitalizeFully(methodName, METHOD_NAME_DELIMITERS).replaceAll("_", "");
       methodName = methodName.substring(0, 1).toLowerCase() + methodName.substring(1);
       return methodName;
@@ -254,7 +285,6 @@ public class BaseFaker {
       return new StrBuilder(strLen).append(Character.toTitleCase(str.charAt(0))).append(str.substring(1).toLowerCase()).toString();
    }
 
-   // lorem
    public List<String> words(int num) {
       List<String> words = new ArrayList<String>();
       for (int i = 0; i < num; i++) {
@@ -297,5 +327,13 @@ public class BaseFaker {
          paragraphs.add(paragraph());
       }
       return paragraphs;
+   }
+   
+   public double doubleInInterval(double min, double max){
+      return min + (max-min) * random.nextDouble();
+   }
+   
+   public double[] coordinatesLatLng(){
+      return new double[]{doubleInInterval(-90.0d,90.0d),doubleInInterval(-180.0d,180.0d)};
    }
 }

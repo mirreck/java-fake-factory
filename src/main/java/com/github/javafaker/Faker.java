@@ -92,4 +92,9 @@ public class Faker extends BaseFaker {
    public String eyeColor() {
       return evaluate("measurements.eye_color");
    }
+   public String[] fullAddress(){
+      return new String[]{
+            evaluate("address.line1"), evaluate("address.line2")
+      };
+   }
 }

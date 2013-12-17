@@ -13,4 +13,8 @@ public class FakerFr extends Faker {
    public FakerFr(Random random) {
       super(Locale.FRENCH, random);
    }
+   
+   public String region() {
+      return evaluate("address.region");
+   }
 }

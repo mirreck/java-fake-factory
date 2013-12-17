@@ -120,5 +120,10 @@ public class BaseFakerTest {
             "Est omnis aut harum dolorem recusandae. Necessitatibus quaerat est quibusdam enim. Vitae culpa quos ullam.", 
             "Pariatur dolorem id nisi quibusdam quas. Eveniet dignissimos et vero laborum repellendus ut officia. Quo praesentium eum quia. Ipsa et eum recusandae consequuntur. Quibusdam suscipit beatae.");
    }
+   
+   @Test
+   public void testCoordinates() {
+      assertThat(fixedSeedFaker.coordinatesLatLng()).isEqualTo(new double[]{29.526858589007873d, -15.49735707412566d});
+   }      
 
 }
