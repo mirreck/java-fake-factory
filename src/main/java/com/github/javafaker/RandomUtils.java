@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 
 public class RandomUtils {
 
@@ -29,6 +30,16 @@ public class RandomUtils {
         return array[nextInt(random, array.length)];
     }
 
+    public static <T> T randomElement(Set<T> set) {
+        return randomElement(newRandom(), set);
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T randomElement(Random random,Set<T> set) {
+        return  (T) set.toArray()[nextInt(random, set.size())];
+    }
+    
     public static <T> T randomElement(List<T> list) {
         return randomElement(newRandom(), list);
     }
