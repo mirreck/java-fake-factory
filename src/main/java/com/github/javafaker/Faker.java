@@ -3,6 +3,8 @@ package com.github.javafaker;
 import java.util.Locale;
 import java.util.Random;
 
+import org.apache.commons.lang.WordUtils;
+
 import com.github.javafaker.domain.Gender;
 
 public class Faker extends BaseFaker {
@@ -75,7 +77,7 @@ public class Faker extends BaseFaker {
     }
 
     public String city() {
-        return capitalizeFully(evaluate("city.formats"));
+        return  WordUtils.capitalizeFully(evaluate("city.formats"));
     }
 
     public String country() {
@@ -83,7 +85,7 @@ public class Faker extends BaseFaker {
     }
 
     public int height() {
-        return randomGaussianInt(fetchInteger("measurements.height.min"), fetchInteger("measurements.height.max"));
+        return RandomUtils.gaussianInt(random,fetchInteger("measurements.height.min"), fetchInteger("measurements.height.max"));
     }
 
     public String eyeColor() {

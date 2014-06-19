@@ -1,6 +1,6 @@
 package com.github.javafaker;
 
-import static org.fest.assertions.Assertions.*;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.Random;
 
@@ -127,5 +127,10 @@ public class FakerTest {
       //assertThat(randomSeedFaker.eyeColor()).isNotNull().isNotEmpty().isNotEqualTo(randomSeedFaker.eyeColor());
 
    }
+
+@Test
+public void testFullAddress() throws Exception {
+    assertThat(fixedSeedFaker.fullAddress()).containsOnly("34043 Olaf Motorway", "NewAntoninaville 90926");
+}
 
 }

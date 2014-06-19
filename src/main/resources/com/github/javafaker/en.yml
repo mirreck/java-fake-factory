@@ -9,7 +9,7 @@ en:
         formats: ['{{name.first_name}} {{address.street_suffix}}','{{name.last_name}} {{address.street_suffix}}']
       secondary_address: ['Apt. ###', 'Suite ###']
       line1: '{{address.street_address}}'
-      line2: '{{city.formats}}, {{address.state_abbr}} {{address.postcode}}'
+      line2: '{{city.formats}} {{address.postcode}}'
       # Though these are US-specific, they are here (in the default locale) for backwards compatibility
       postcode: ['#####', '#####-####']
     city:
