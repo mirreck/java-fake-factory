@@ -1,13 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.github.java-fake-factory</groupId>
+  <groupId>com.github.mirreck</groupId>
   <artifactId>java-fake-factory</artifactId>
   <packaging>jar</packaging>
   <version>0.1.0-SNAPSHOT</version>
   <name>Java Fake Factory</name>
   <description>A Library to create fake values. Inspired form the ruby Faker gem.</description>
   <url>https://github.com/mirreck/java-fake-factory</url>
+  
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+      <name>Mirreck</name>
+      <url>https://github.com/mirreck</url>
+      <timezone>1</timezone>
+    </developer>
+  </developers>
+  
+  <scm>
+    <connection>scm:git:git@github.com:mirreck/java-fake-factory.git</connection>
+    <developerConnection>scm:git:git@github.com:mirreck/java-fake-factory.git</developerConnection>
+    <url>git@github.com:mirreck/java-fake-factory.git</url>
+  </scm>
+  
   <dependencies>
     <dependency>
       <groupId>commons-lang</groupId>

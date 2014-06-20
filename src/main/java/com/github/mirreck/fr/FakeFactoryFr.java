@@ -1,16 +1,16 @@
-package com.github.javafaker.fr;
+package com.github.mirreck.fr;
 
 import java.util.Locale;
 import java.util.Random;
 
-import com.github.javafaker.Faker;
+import com.github.mirreck.FakeFactory;
 
-public class FakerFr extends Faker {
-   public FakerFr() {
+public class FakeFactoryFr extends FakeFactory {
+   public FakeFactoryFr() {
       super(Locale.FRENCH);
    }
 
-   public FakerFr(Random random) {
+   public FakeFactoryFr(Random random) {
       super(Locale.FRENCH, random);
    }
    

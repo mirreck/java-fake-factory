@@ -1,30 +1,30 @@
-package com.github.javafaker;
+package com.github.mirreck;
 
 import java.util.Locale;
 import java.util.Random;
 
 import org.apache.commons.lang.WordUtils;
 
-import com.github.javafaker.domain.Gender;
+import com.github.mirreck.domain.Gender;
 
-public class Faker extends BaseFaker {
+public class FakeFactory extends BaseFakeFactory {
 
     private static final String ADDRESS_SECONDARY_ADDRESS = "address.secondary_address";
     private static final String ADDRESS_STREET_ADDRESS = "address.street_address";
 
-    public Faker() {
+    public FakeFactory() {
         super(Locale.ENGLISH);
     }
 
-    public Faker(Random random) {
+    public FakeFactory(Random random) {
         super(Locale.ENGLISH, random);
     }
 
-    public Faker(Locale locale) {
+    public FakeFactory(Locale locale) {
         super(locale);
     }
 
-    public Faker(Locale locale, Random random) {
+    public FakeFactory(Locale locale, Random random) {
         super(locale, random);
     }
 

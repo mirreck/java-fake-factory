@@ -1,4 +1,4 @@
-package com.github.javafaker;
+package com.github.mirreck;
 
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 

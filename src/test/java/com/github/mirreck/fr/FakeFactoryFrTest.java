@@ -1,4 +1,4 @@
-package com.github.javafaker.fr;
+package com.github.mirreck.fr;
 
 import java.util.Random;
 
@@ -7,17 +7,17 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FakerFrTest {
+public class FakeFactoryFrTest {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(FakerFrTest.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger(FakeFactoryFrTest.class);
    
    private static final long SEED = 123456789L;
 
-   private FakerFr faker;
+   private FakeFactoryFr factory;
 
    @Before
    public void init() {
-      faker = new FakerFr(new Random(SEED));
+      factory = new FakeFactoryFr(new Random(SEED));
    }
    public void testStreetName() {
       
@@ -25,7 +25,7 @@ public class FakerFrTest {
    @Test
    public void testMany() {
       for (int i = 0; i < 1000; i++) {
-         LOGGER.info("street:"+ faker.streetName());
+         LOGGER.info("street:"+ factory.streetName());
         
       }
       

@@ -1,4 +1,4 @@
-package com.github.javafaker;
+package com.github.mirreck;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -9,6 +9,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.mirreck.RandomUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

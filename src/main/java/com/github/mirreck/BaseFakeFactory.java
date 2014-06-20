@@ -1,4 +1,4 @@
-package com.github.javafaker;
+package com.github.mirreck;
 
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.join;
@@ -18,10 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class BaseFaker {
+public class BaseFakeFactory {
     private static final String ROOT_ELEMENT = "faker";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseFaker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseFakeFactory.class);
 
     private static final String PARAM_PREFIX = "{{";
     private static final String PARAM_SUFFIX = "}}";
@@ -36,27 +36,27 @@ public class BaseFaker {
 
     protected final Random random;
 
-    public BaseFaker(Locale locale) {
+    public BaseFakeFactory(Locale locale) {
         this(locale, new Random());
     }
 
-    public BaseFaker(Locale locale, Random random) {
+    public BaseFakeFactory(Locale locale, Random random) {
         LOGGER.debug("Using locale " + locale);
         this.locale = locale;
         String languageCode = locale.getLanguage();
-        Map valuesMap = (Map) Yaml.load(BaseFaker.class.getResourceAsStream(languageCode + ".yml"));
+        Map valuesMap = (Map) Yaml.load(BaseFakeFactory.class.getResourceAsStream(languageCode + ".yml"));
         valuesMap = (Map) valuesMap.get(languageCode);
         fakeValuesMap = (Map<String, Object>) valuesMap.get(ROOT_ELEMENT);
 
         this.random = random;
     }
 
-    protected BaseFaker extend(Locale locale) {
+    protected BaseFakeFactory extend(Locale locale) {
         return extend(locale.getLanguage());
     }
 
-    protected BaseFaker extend(String localeExtension) {
-        Map valuesMap = (Map) Yaml.load(BaseFaker.class.getResourceAsStream(localeExtension + ".yml"));
+    protected BaseFakeFactory extend(String localeExtension) {
+        Map valuesMap = (Map) Yaml.load(BaseFakeFactory.class.getResourceAsStream(localeExtension + ".yml"));
         valuesMap = (Map) valuesMap.get(locale.getLanguage());
         fakeValuesMap.putAll((Map<String, Object>) valuesMap.get(ROOT_ELEMENT));
         return this;
@@ -109,7 +109,7 @@ public class BaseFaker {
     private List<Object> fetchList(String key) {
         Object obj = fetchObject(key);
         if (!(obj instanceof List<?>)) {
-            throw new FakerException("Fetched Object is not a List. Key=" + key);
+            throw new FakeFactoryException("Fetched Object is not a List. Key=" + key);
         }
         return (List<Object>) obj;
     }
@@ -150,7 +150,7 @@ public class BaseFaker {
         if (prefixIndex != -1) {
             int suffixIndex = pattern.indexOf(PARAM_SUFFIX, prefixIndex);
             if (suffixIndex == -1) {
-                throw new FakerException("Unmatched prefix/suffix");
+                throw new FakeFactoryException("Unmatched prefix/suffix");
             }
             String expression = pattern.substring(prefixIndex + PARAM_PREFIX.length(), suffixIndex);
             String replacement = evaluate(expression);
@@ -166,9 +166,9 @@ public class BaseFaker {
     private String evaluateCall(String method) {
         String methodName = toCamelCase(method);
         try {
-            return (String) Faker.class.getDeclaredMethod(methodName, (Class[]) null).invoke(this);
+            return (String) FakeFactory.class.getDeclaredMethod(methodName, (Class[]) null).invoke(this);
         } catch (Exception e) {
-            throw new FakerException("Unable to call method :" + method, e);
+            throw new FakeFactoryException("Unable to call method :" + method, e);
         }
     }
 
