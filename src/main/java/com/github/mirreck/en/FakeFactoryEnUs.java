@@ -5,12 +5,12 @@ import java.util.Random;
 
 import com.github.mirreck.FakeFactory;
 
-public class FakeFactoryEn extends FakeFactory {
-   public FakeFactoryEn() {
+public class FakeFactoryEnUs extends FakeFactory {
+   public FakeFactoryEnUs() {
       super(Locale.ENGLISH);
    }
 
-   public FakeFactoryEn(Random random) {
+   public FakeFactoryEnUs(Random random) {
       super(Locale.ENGLISH, random);
       this.extend("en_us");
    }

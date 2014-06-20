@@ -1,4 +1,4 @@
-# Though these are US-specific, they are here (in the default locale) for backwards compatibility
+# US-specific values
 en:
   faker:
     address:

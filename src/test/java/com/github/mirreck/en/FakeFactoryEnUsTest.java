@@ -7,15 +7,15 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-public class FakeFactoryEnTest {
+public class FakeFactoryEnUsTest {
 
    private static final long SEED = 123456789L;
 
-   private FakeFactoryEn factory;
+   private FakeFactoryEnUs factory;
 
    @Before
    public void init() {
-      factory = new FakeFactoryEn(new Random(SEED));
+      factory = new FakeFactoryEnUs(new Random(SEED));
    }
 
    @Test
