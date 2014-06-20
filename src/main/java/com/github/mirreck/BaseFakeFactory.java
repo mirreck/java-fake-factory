@@ -286,9 +286,9 @@ public class BaseFakeFactory {
 
     
     public Date date(int minYear, int maxYear){
-        DateTime dt = new DateTime();
-        dt.withYear(RandomUtils.intInInterval(random,minYear,maxYear));
-        dt.withDayOfYear(RandomUtils.intInInterval(random,0,365));
+        DateTime dt = new DateTime()
+            .withYear(RandomUtils.intInInterval(random,minYear,maxYear))
+            .withDayOfYear(RandomUtils.intInInterval(random,0,365));
         return dt.toDate();
     }
     
