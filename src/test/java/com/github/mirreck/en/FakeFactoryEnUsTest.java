@@ -19,6 +19,11 @@ public class FakeFactoryEnUsTest {
    }
 
    @Test
+   public void testAddressLine2() {
+      assertThat(factory.fullAddress()).containsOnly("34043 Olaf Motorway","NewAntoninaville, WV 09268");
+   }
+   
+   @Test
    public void testState() {
       assertThat(factory.state()).isEqualTo("Kansas");
    }

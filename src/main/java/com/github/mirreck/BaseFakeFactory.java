@@ -9,7 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.lang.WordUtils;
 import org.ho.yaml.Yaml;
@@ -32,23 +34,22 @@ public class BaseFakeFactory {
 
     private Map<String, Object> fakeValuesMap;
 
-    protected final Locale locale;
-
     protected final Random random;
 
     public BaseFakeFactory(Locale locale) {
         this(locale, new Random());
     }
 
-    public BaseFakeFactory(Locale locale, Random random) {
-        LOGGER.debug("Using locale " + locale);
-        this.locale = locale;
-        String languageCode = locale.getLanguage();
-        Map valuesMap = (Map) Yaml.load(BaseFakeFactory.class.getResourceAsStream(languageCode + ".yml"));
-        valuesMap = (Map) valuesMap.get(languageCode);
+    public BaseFakeFactory(Random random) {
+        Map valuesMap = (Map) Yaml.load(BaseFakeFactory.class.getResourceAsStream("base.yml"));
+        valuesMap = (Map) valuesMap.get("base");
         fakeValuesMap = (Map<String, Object>) valuesMap.get(ROOT_ELEMENT);
-
         this.random = random;
+    }
+
+    public BaseFakeFactory(Locale locale, Random random) {
+        this(random);
+        this.extend(locale);
     }
 
     protected BaseFakeFactory extend(Locale locale) {
@@ -56,10 +57,32 @@ public class BaseFakeFactory {
     }
 
     protected BaseFakeFactory extend(String localeExtension) {
-        Map valuesMap = (Map) Yaml.load(BaseFakeFactory.class.getResourceAsStream(localeExtension + ".yml"));
-        valuesMap = (Map) valuesMap.get(locale.getLanguage());
-        fakeValuesMap.putAll((Map<String, Object>) valuesMap.get(ROOT_ELEMENT));
+        LOGGER.debug("Using locale : {}",localeExtension);
+        Map<String, Object> valuesMap = (Map<String, Object>) Yaml.load(BaseFakeFactory.class.getResourceAsStream(localeExtension + ".yml"));
+        valuesMap = (Map<String, Object>) valuesMap.get(localeExtension);
+        Map<String, Object> extValuesMap = (Map<String, Object>) valuesMap.get(ROOT_ELEMENT);
+        extendMap(fakeValuesMap, extValuesMap);
         return this;
+    }
+    
+    private void extendMap(Map<String, Object> baseMap, Map<String, Object> extMap){
+        Set<Entry<String, Object>> entrySet = extMap.entrySet();
+        for (Entry<String, Object> entry : entrySet) {
+            if(!(entry.getValue() instanceof Map) ){
+                if(entry.getValue().equals(baseMap.get(entry.getKey()))){
+                    //LOGGER.warn("Extended version is the same as base for key : {}",entry.getKey());
+                }
+                baseMap.put(entry.getKey(), entry.getValue());
+            } else {
+                Map<String, Object> object = (Map<String, Object>) baseMap.get(entry.getKey());
+                if(object == null){
+                    baseMap.put(entry.getKey(), entry.getValue());
+                } else {
+                    extendMap(object, (Map<String, Object>) entry.getValue());
+                }
+                
+            }
+        }
     }
 
 

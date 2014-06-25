@@ -1,5 +1,7 @@
 package com.github.mirreck.fr;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.Random;
 
 import org.junit.Before;
@@ -19,9 +21,17 @@ public class FakeFactoryFrTest {
    public void init() {
       factory = new FakeFactoryFr(new Random(SEED));
    }
-   public void testStreetName() {
-      
+   
+   @Test
+   public void testPhone(){
+       assertThat(factory.phoneNumber()).isEqualTo("+33 134043777");
    }
+   @Test
+   public void testCellPhone(){
+       assertThat(factory.cellPhoneNumber()).isEqualTo("+33 734043777");
+   }
+   
+   
    @Test
    public void testMany() {
       for (int i = 0; i < 1000; i++) {

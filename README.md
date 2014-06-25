@@ -3,6 +3,8 @@ Java Fake Factory
 
 inspired by the Ruby library Faker
 
+This library provides methods to fill your beans with fake values.
+
 ## Basic Usage
 
 
@@ -84,7 +86,7 @@ public class FakeFactoryEnUs extends FakeFactory {
    }
 }
 ```
-and the configuration file:
+and the configuration file: em_us.yml
 ```yaml
 # US-specific values
 en:
@@ -98,7 +100,7 @@ en:
 
 Based On
 --------
-Initially forked from [Java java-faker](https://github.com/DiUS/java-faker)
+Initially forked from [java-faker](https://github.com/DiUS/java-faker)
 and Inspired by
 - [Ruby Faker](https://github.com/stympy/faker)
 - [Python faker](https://github.com/joke2k/faker)

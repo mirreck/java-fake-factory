@@ -55,7 +55,15 @@ public class FakeFactory extends BaseFakeFactory {
     public String phoneNumber() {
         return evaluate("phone_number.formats");
     }
+    
+    public String cellPhoneNumber() {
+        return evaluate("cell_phone_number.formats");
+    }
 
+    public String email() {
+        return evaluate("internet.email").toLowerCase();
+    }
+    
     public String streetName() {
         return evaluate("address.street_name.formats");
     }

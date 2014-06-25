@@ -97,9 +97,9 @@ public class SampleTest {
 
         FakeFactory fixedSeedFactory = new FakeFactory(new Random(SEED));
 
-        String streetName = fixedSeedFactory.streetName();
+        String firstName = fixedSeedFactory.firstName();
 
-        LOGGER.info("streetName : {}", streetName);
+        LOGGER.info("firstName : {}", firstName);
     }
 
 }
