@@ -10,7 +10,7 @@
   <groupId>com.github.mirreck</groupId>
   <artifactId>java-fake-factory</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.1</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>Java Fake Factory</name>
   <description>A Library to create fake values. Inspired form the ruby Faker gem.</description>
   <url>https://github.com/mirreck/java-fake-factory</url>
@@ -31,10 +31,9 @@
   </developers>
   
   <scm>
-    <connection>scm:git:https://github.com/mirreck/java-fake-factory.git</connection>
-    <developerConnection>scm:git:https://github.com/mirreck/java-fake-factory.git</developerConnection>
-    <url>https://github.com/mirreck/java-fake-factory.git</url>
-    <tag>java-fake-factory-1.0.1</tag>
+    <connection>scm:git:git@github.com:mirreck/java-fake-factory.git</connection>
+    <developerConnection>scm:git:git@github.com:mirreck/java-fake-factory.git</developerConnection>
+    <url>git@github.com:mirreck/java-fake-factory.git</url>
   </scm>
   
 	<distributionManagement>
@@ -93,25 +92,6 @@
   </dependencies>
 
   <build>
-	<plugins>
-	  <plugin>
-		 <groupId>org.apache.maven.plugins</groupId>
-		 <artifactId>maven-release-plugin</artifactId>
-		 <version>2.4.2</version>
-		 <configuration>
-		  <providerImplementations>
-			  <git>jgit</git>
-		  </providerImplementations>
-		 </configuration>
-		 <dependencies>
-		  <dependency>
-			  <groupId>org.apache.maven.scm</groupId>
-			  <artifactId>maven-scm-provider-jgit</artifactId>
-					<version>1.9</version>
-		  </dependency>
-		 </dependencies>
-	   </plugin>
-	</plugins>
     <pluginManagement>
       <plugins>
         <plugin>
