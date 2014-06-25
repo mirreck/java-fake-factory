@@ -10,7 +10,7 @@
   <groupId>com.github.mirreck</groupId>
   <artifactId>java-fake-factory</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <name>Java Fake Factory</name>
   <description>A Library to create fake values. Inspired form the ruby Faker gem.</description>
   <url>https://github.com/mirreck/java-fake-factory</url>
@@ -34,6 +34,7 @@
     <connection>scm:git:https://github.com/mirreck/java-fake-factory.git</connection>
     <developerConnection>scm:git:https://github.com/mirreck/java-fake-factory.git</developerConnection>
     <url>https://github.com/mirreck/java-fake-factory.git</url>
+    <tag>java-fake-factory-1.0.1</tag>
   </scm>
   
 	<distributionManagement>
