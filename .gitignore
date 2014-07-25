@@ -8,3 +8,7 @@
 /.settings
 /.classpath
 /.project
+/pom.xml.releaseBackup
+/release.properties
+/.idea
+/java-fake-factory.iml

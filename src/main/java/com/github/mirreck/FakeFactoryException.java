@@ -11,5 +11,7 @@ public class FakeFactoryException extends RuntimeException {
     public FakeFactoryException(String string) {
         super(string);
     }
-
+    public FakeFactoryException(String pattern, String... args) {
+        super(String.format(pattern,args));
+    }
 }

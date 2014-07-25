@@ -4,14 +4,9 @@ import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.join;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
 
 import org.apache.commons.lang.WordUtils;
 import org.ho.yaml.Yaml;
@@ -33,6 +28,10 @@ public class BaseFakeFactory {
 
 
     private Map<String, Object> fakeValuesMap;
+
+    public Random getRandom() {
+        return random;
+    }
 
     protected final Random random;
 
@@ -87,14 +86,7 @@ public class BaseFakeFactory {
 
 
 
-    /**
-     * Return the object selected by the key from yaml file.
-     * 
-     * @param key
-     *            key contains path to an object. Path segment is separated by
-     *            dot. E.g. name.first_name
-     * @return
-     */
+
     private Object fetchObject(String key) {
         String[] path = key.split("\\.");
         Object currentValue = fakeValuesMap;
@@ -107,12 +99,6 @@ public class BaseFakeFactory {
         return currentValue;
     }
 
-    /**
-     * Fetch a random value from an array item specified by the key
-     * 
-     * @param key
-     * @return
-     */
     private Object fetch(String key) {
         List valuesArray = (List) fetchObject(key);
         if (valuesArray == null) {
@@ -168,7 +154,7 @@ public class BaseFakeFactory {
         return null;
     }
 
-    private String evaluatePattern(String pattern) {
+    public String evaluatePattern(String pattern) {
         int prefixIndex = pattern.indexOf(PARAM_PREFIX);
         if (prefixIndex != -1) {
             int suffixIndex = pattern.indexOf(PARAM_SUFFIX, prefixIndex);
@@ -186,14 +172,28 @@ public class BaseFakeFactory {
         return bothify(pattern);
     }
 
-    private String evaluateCall(String method) {
-        String methodName = toCamelCase(method);
+    private String evaluateCall(String methodSignature) {
+        final String[] signature = methodSignature.split(" ");
+
+        String methodName = toCamelCase(signature[0]);
+
+        Method method;
         try {
-            return (String) FakeFactory.class.getDeclaredMethod(methodName, (Class[]) null).invoke(this);
+            method = BeanUtils.findMethod(this.getClass(), methodName, signature.length - 1);
+        } catch (FakeFactoryException e){
+            method = BeanUtils.findMethod(RandomUtils.class, methodName, signature.length - 1);
+        }
+        final String[] args = Arrays.copyOfRange(signature, 1, signature.length);
+
+
+        try {
+            return String.valueOf(method.invoke(this, BeanUtils.matchMethodArgTypes(method, args)));
         } catch (Exception e) {
             throw new FakeFactoryException("Unable to call method :" + method, e);
         }
     }
+
+
 
     protected String[] evaluateMultipleLines(String key) {
         List list = fetchList(key);
