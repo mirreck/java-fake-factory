@@ -1,5 +1,7 @@
 package com.github.mirreck.bean.fill;
 
+import com.github.mirreck.FakeFactoryException;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -19,10 +21,8 @@ public class ValueFiller<T> implements Filler<T> {
 
             property.getWriteMethod().invoke(bean, value);
 
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new FakeFactoryException("Unable to fill property", e);
         }
     }
 

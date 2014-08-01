@@ -68,9 +68,6 @@ public class BaseFakeFactory {
         Set<Entry<String, Object>> entrySet = extMap.entrySet();
         for (Entry<String, Object> entry : entrySet) {
             if(!(entry.getValue() instanceof Map) ){
-                if(entry.getValue().equals(baseMap.get(entry.getKey()))){
-                    //LOGGER.warn("Extended version is the same as base for key : {}",entry.getKey());
-                }
                 baseMap.put(entry.getKey(), entry.getValue());
             } else {
                 Map<String, Object> object = (Map<String, Object>) baseMap.get(entry.getKey());
@@ -181,6 +178,7 @@ public class BaseFakeFactory {
         try {
             method = BeanUtils.findMethod(this.getClass(), methodName, signature.length - 1);
         } catch (FakeFactoryException e){
+            LOGGER.info("Method not found in this Factory, Search in RandomUtils");
             method = BeanUtils.findMethod(RandomUtils.class, methodName, signature.length - 1);
         }
         final String[] args = Arrays.copyOfRange(signature, 1, signature.length);

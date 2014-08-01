@@ -1,7 +1,12 @@
 package com.github.mirreck;
 
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Primitives;
+
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class BeanUtils {
     private BeanUtils() {
@@ -26,29 +31,43 @@ public class BeanUtils {
         }
         return result;
     }
+
+    public static final List<Class> VALUE_OF_CLASSES = Lists.<Class>newArrayList(
+            Integer.class, int.class,
+            Long.class, long.class,
+            Float.class, float.class,
+            Double.class, double.class,
+            Boolean.class, boolean.class);
+
     public static Object matchType(Class targetType, String arg){
         if(targetType.isEnum()){
-            Class<Enum> enumClass = (Class<Enum>) targetType;
-            try {
-                return enumClass.getDeclaredMethod("valueOf",String.class).invoke(null,arg);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new FakeFactoryException(e+"Unsupported enum argument type : %s", targetType.getName());
-            }
-        } else if(targetType.equals(String.class)){
+            return matchEnum(targetType, arg);
+        } else if(targetType.equals(String.class)) {
             return arg;
-        } else if(targetType.equals(Integer.class) || targetType.equals(int.class)){
-            return Integer.valueOf(arg);
-        } else if(targetType.equals(Long.class) || targetType.equals(Long.class)){
-            return Long.valueOf(arg);
-        } else if(targetType.equals(Float.class) || targetType.equals(Float.class)){
-            return Float.valueOf(arg);
-        } else if(targetType.equals(Double.class) || targetType.equals(Double.class)){
-            return Double.valueOf(arg);
-        } else if(targetType.equals(Boolean.class) || targetType.equals(boolean.class)){
-            return Boolean.valueOf(arg);
+        } else if(VALUE_OF_CLASSES.contains(targetType)){
+            return matchPrimitive(targetType, arg);
         }
         throw new FakeFactoryException("Unsupported argument type : %s", targetType.getName());
+    }
+
+    private static Object matchEnum(Class targetType, String arg) {
+        Class<Enum> enumClass = (Class<Enum>) targetType;
+        try {
+            return enumClass.getDeclaredMethod("valueOf",String.class).invoke(null,arg);
+        } catch (Exception e) {
+            throw new FakeFactoryException(e+"Unsupported enum argument type : %s", targetType.getName());
+        }
+    }
+
+    private static Object matchPrimitive(Class targetType, String arg) {
+            // wrap primitive target types
+            Class wraped = Primitives.wrap(targetType);
+        try {
+            return wraped.getDeclaredMethod("valueOf",String.class).invoke(null,arg);
+        } catch (Exception e) {
+            throw new FakeFactoryException(e+"Unsupported enum argument type : %s",e, targetType.getName());
+        }
+
     }
 
 }

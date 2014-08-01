@@ -2,7 +2,6 @@ package com.github.mirreck.bean;
 
 import com.github.mirreck.FakeFactory;
 import com.github.mirreck.FakeFactoryException;
-import com.github.mirreck.RandomUtils;
 import com.github.mirreck.bean.fill.*;
 import com.google.common.collect.Lists;
 import org.ho.yaml.Yaml;
@@ -13,7 +12,6 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +24,7 @@ public class FakeBeanFactory<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FakeBeanFactory.class);
 
-    private static Map<String, Object> configuration = new HashMap<String, Object>();
+    private Map<String, Object> configuration = new HashMap<String, Object>();
 
     private List<Filler> fillers = new ArrayList<Filler>();
     private FakeFactory fakeFactory;
@@ -62,11 +60,10 @@ public class FakeBeanFactory<T> {
     private void initializeFillers(Class targetClass){
         try {
             final PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(targetClass).getPropertyDescriptors();
-            for (int i = 0; i < propertyDescriptors.length; i++) {
-                PropertyDescriptor propertyDescriptor = propertyDescriptors[i];
+            for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
                 Object propConf = configuration.get(propertyDescriptor.getName());
-                if(propConf != null){
-                    final Filler filler = filler( propertyDescriptor, propConf);
+                if (propConf != null) {
+                    final Filler filler = filler(propertyDescriptor, propConf);
                     fillers.add(filler);
                 } else {
                     final Filler filler = defaultFiller(propertyDescriptor);
@@ -74,7 +71,7 @@ public class FakeBeanFactory<T> {
                 }
             }
         } catch (IntrospectionException e) {
-            throw new RuntimeException(e);
+            throw new FakeFactoryException("Unable to initialize Bean Factory",e);
         }
     }
 
@@ -91,24 +88,8 @@ public class FakeBeanFactory<T> {
             final Enum<?>[] values = (Enum<?>[]) enumClass.getDeclaredMethod("values").invoke(null);
             return new ValueListFiller(fakeFactory, propertyDescriptor, Lists.newArrayList(values));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new FakeFactoryException("Unable to initialize Filler",e);
         }
-    }
-
-
-    private PropertyDescriptor getPropertyDescriptor(Class targetClass, String name){
-        try {
-            final PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(targetClass).getPropertyDescriptors();
-            for (int i = 0; i < propertyDescriptors.length; i++) {
-                PropertyDescriptor propertyDescriptor = propertyDescriptors[i];
-                if(propertyDescriptor.getName().equals(name)){
-                    return propertyDescriptor;
-                }
-            }
-        } catch (IntrospectionException e) {
-            throw new RuntimeException("Property not found :"+name, e);
-        }
-        throw new RuntimeException("Property not found :"+name);
     }
 
     private Filler filler(PropertyDescriptor propertyDescriptor, Object configuration){
@@ -124,7 +105,7 @@ public class FakeBeanFactory<T> {
             String pattern = (String) configuration;
             return new PatternFiller(fakeFactory, propertyDescriptor, pattern);
         }
-        throw new RuntimeException("Cannot create filler for "+propertyDescriptor.getName());
+        throw new FakeFactoryException("Cannot create filler for "+propertyDescriptor.getName());
     }
 
     public void fillBean(T bean){

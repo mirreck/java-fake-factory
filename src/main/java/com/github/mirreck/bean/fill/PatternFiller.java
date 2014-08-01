@@ -2,12 +2,12 @@ package com.github.mirreck.bean.fill;
 
 import com.github.mirreck.BeanUtils;
 import com.github.mirreck.FakeFactory;
+import com.github.mirreck.FakeFactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+
 
 /**
  * Created by thomas.decoster on 22/07/2014.
@@ -33,10 +33,8 @@ public class PatternFiller<T> extends AbstractFiller<T> {
             LOGGER.info("pattern= {} value {}", lPattern, value);
             final Object converted = BeanUtils.matchType(this.property.getPropertyType(), value);
             property.getWriteMethod().invoke(bean, converted);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new FakeFactoryException("Unable to fill property", e);
         }
     }
 

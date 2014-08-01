@@ -1,11 +1,11 @@
 package com.github.mirreck.bean.fill;
 
 import com.github.mirreck.FakeFactory;
+import com.github.mirreck.FakeFactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -27,17 +27,15 @@ public class MethodFiller<T> extends AbstractFiller<T> {
         try {
             method = fakeFactory.getClass().getDeclaredMethod(methodName, (Class[]) null);
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new FakeFactoryException("Unable to initialize filler", e);
         }
     }
     public void apply(T bean){
         try {
             final String value = (String) method.invoke(fakeFactory);
             property.getWriteMethod().invoke(bean, value);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new FakeFactoryException("Unable to fill property", e);
         }
     }
 
