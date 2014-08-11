@@ -4,6 +4,7 @@ import com.github.mirreck.FakeFactory;
 import com.github.mirreck.FakeFactoryException;
 import com.github.mirreck.bean.fill.*;
 import com.google.common.collect.Lists;
+
 import org.ho.yaml.Yaml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,23 @@ public class FakeBeanFactory<T> {
 
     private Map<String, Object> configuration = new HashMap<String, Object>();
 
-    private List<Filler> fillers = new ArrayList<Filler>();
+    private List<Filler<T>> fillers = new ArrayList<Filler<T>>();
     private FakeFactory fakeFactory;
 
     public FakeBeanFactory(Class<T> targetClass){
         // find configuration
-        final String propertiesFileName = targetClass.getSimpleName() + "-fake-cfg.yml";
+        Map<String, Object> conf = loadConfiguration(targetClass);
+        Object valuesMap = ((Map<String, Object>) conf).get(targetClass.getName());
+        if(!(valuesMap instanceof Map)){
+            throw new FakeFactoryException("Error while loading configuration !");
+        }
+        configuration = (Map<String, Object>) valuesMap;
+        initializeFactory();
+        initializeFillers(targetClass);
+    }
+
+	private Map<String, Object> loadConfiguration(Class<T> targetClass) {
+		final String propertiesFileName = targetClass.getSimpleName() + "-fake-cfg.yml";
         final InputStream inputStream = targetClass.getResourceAsStream(propertiesFileName);
         if(inputStream != null){
             LOGGER.info("specific configuration");
@@ -39,19 +51,15 @@ public class FakeBeanFactory<T> {
             if(!(yaml instanceof Map)){
                 throw new FakeFactoryException("Error while loading configuration !");
             }
-            Object valuesMap = ((Map<String, Object>) yaml).get(targetClass.getName());
-            if(!(valuesMap instanceof Map)){
-                throw new FakeFactoryException("Error while loading configuration !");
-            }
-            configuration = (Map<String, Object>) valuesMap;
+            
+            return (Map<String, Object>) yaml;
 
 
         } else {
             LOGGER.warn("no configuration found for class {}", targetClass.getName());
+            return new HashMap<String, Object>();
         }
-        initializeFactory();
-        initializeFillers(targetClass);
-    }
+	}
 
     private void initializeFactory() {
         this.fakeFactory = new FakeFactory();
@@ -86,7 +94,7 @@ public class FakeBeanFactory<T> {
         try {
             Class<Enum> enumClass = (Class<Enum>) propertyDescriptor.getPropertyType();
             final Enum<?>[] values = (Enum<?>[]) enumClass.getDeclaredMethod("values").invoke(null);
-            return new ValueListFiller(fakeFactory, propertyDescriptor, Lists.newArrayList(values));
+            return new ValueListFiller(fakeFactory, propertyDescriptor.getWriteMethod(), Lists.newArrayList(values));
         } catch (Exception e) {
             throw new FakeFactoryException("Unable to initialize Filler",e);
         }
@@ -100,10 +108,10 @@ public class FakeBeanFactory<T> {
         } else if(configuration instanceof List){
             // this is an ObjectFiller
             LOGGER.info("List Filler : {}",configuration);
-            return new ValueListFiller(fakeFactory, propertyDescriptor,(List<String>) configuration);
+            return new ValueListFiller(fakeFactory, propertyDescriptor.getWriteMethod(),(List<String>) configuration);
         } else if(configuration instanceof String){
             String pattern = (String) configuration;
-            return new PatternFiller(fakeFactory, propertyDescriptor, pattern);
+            return new PatternFiller(fakeFactory, propertyDescriptor.getWriteMethod(), pattern);
         }
         throw new FakeFactoryException("Cannot create filler for "+propertyDescriptor.getName());
     }

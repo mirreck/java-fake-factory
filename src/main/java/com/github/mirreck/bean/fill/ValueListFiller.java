@@ -4,6 +4,7 @@ import com.github.mirreck.FakeFactory;
 import com.github.mirreck.RandomUtils;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -11,19 +12,15 @@ import java.util.List;
  */
 public class ValueListFiller<T> extends PatternFiller<T> implements Filler<T> {
 
-    private List<Object> values;
-    public ValueListFiller(FakeFactory fakeFactory, PropertyDescriptor property, List<Object> values){
-        super(fakeFactory,property,"");
+    private List<String> values;
+    public ValueListFiller(FakeFactory fakeFactory, Method writerMethod, List<String> values){
+        super(fakeFactory,writerMethod,"");
         this.values = values;
     }
-    public void apply(T bean){
-        final Object randomElement = RandomUtils.randomElement(fakeFactory.getRandom(), values);
-        if(randomElement instanceof String){
-            setValueWithPattern(bean, (String) randomElement );
-        } else {
-            setValue(bean, randomElement);
-        }
-    }
+
+	protected String getPattern(){
+		return RandomUtils.randomElement(fakeFactory.getRandom(), values);
+	}
 
 
 }

@@ -1,5 +1,7 @@
 package com.github.mirreck;
 
+
+import com.github.mirreck.FakeFactoryException;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Primitives;
 

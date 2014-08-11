@@ -1,4 +1,4 @@
-package com.github.mirreck.bean;
+package com.github.mirreck.bean.domain;
 
 /**
  * Created by thomas.decoster on 23/07/2014.

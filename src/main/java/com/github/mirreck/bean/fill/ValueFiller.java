@@ -1,30 +1,22 @@
 package com.github.mirreck.bean.fill;
 
-import com.github.mirreck.FakeFactoryException;
-
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Created by thomas.decoster on 22/07/2014.
  */
-public class ValueFiller<T> implements Filler<T> {
+public class ValueFiller<T> extends AbstractFiller<T> implements Filler<T> {
 
-    private PropertyDescriptor property;
     private String value;
-    public ValueFiller(PropertyDescriptor property, String value){
-        this.property = property;
+    public ValueFiller(Method writerMethod, String value){
+        super(writerMethod);
         this.value = value;
     }
-    public void apply(T bean){
-        try {
-
-            property.getWriteMethod().invoke(bean, value);
-
-        } catch (Exception e) {
-            throw new FakeFactoryException("Unable to fill property", e);
-        }
-    }
+    
+	@Override
+	protected String generateValue() {
+		return value;
+	}
 
 
 }

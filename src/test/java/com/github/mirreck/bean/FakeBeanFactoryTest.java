@@ -6,26 +6,26 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.fest.assertions.Assertions.assertThat;
+import com.github.mirreck.bean.domain.Person;
 
 public class FakeBeanFactoryTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FakeBeanFactoryTest.class);
 
-    private FakeBeanFactory factory;
+    private FakeBeanFactory<Person> factory;
     @Before
     public void setUp() throws Exception {
-        factory = new FakeBeanFactory<TestBean>(TestBean.class);
+        factory = new FakeBeanFactory<Person>(Person.class);
     }
 
     @Test
     public void testFillBean() throws Exception {
 
-        TestBean bean = new TestBean();
-        factory.fillBean(bean);
-        Assertions.assertThat(bean.getColor()).isNotNull();
-        Assertions.assertThat(bean.getStr()).isNotEmpty();
-        LOGGER.info("bean :" + bean);
+        Person person = new Person();
+        factory.fillBean(person);
+        Assertions.assertThat(person.getEyeColor()).isNotNull();
+        Assertions.assertThat(person.getJob()).isNotEmpty();
+        LOGGER.info("bean :" + person);
 
     }
 }

@@ -1,30 +1,39 @@
 package com.github.mirreck.bean.fill;
 
 
-import com.github.mirreck.FakeFactoryException;
-
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+
+import com.github.mirreck.BeanUtils;
+import com.github.mirreck.FakeFactoryException;
 
 /**
  * Created by thomas.decoster on 23/07/2014.
  */
 public abstract class AbstractFiller<T> implements Filler<T> {
-    protected PropertyDescriptor property;
-
-    public AbstractFiller(PropertyDescriptor property) {
-        this.property = property;
+	
+	
+	protected Method writerMethod;
+	
+    public AbstractFiller(Method writerMethod) {
+        this.writerMethod = writerMethod;
     }
 
     @Override
     public String toString() {
-        return "[Filler] property=" + ((property == null)?"none":property.getName());
+        return "[Filler] property=" + ((writerMethod == null)?"none":writerMethod.getName());
     }
-
-    protected void setValue(T bean, Object value){
-        try {
-            property.getWriteMethod().invoke(bean, value);
-        } catch (Exception e) {
+	
+    @Override
+	public void apply(T bean) {
+    	try {
+    		Object value = BeanUtils.matchType(this.writerMethod.getParameterTypes()[0], generateValue());
+			writerMethod.invoke(bean, value);
+		} catch (Exception e) {
             throw new FakeFactoryException("Unable to set property value", e);
         }
-    }
+		
+	}
+	
+    protected abstract String generateValue();
 }

@@ -5,8 +5,15 @@ import static org.apache.commons.lang.StringUtils.join;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.lang.WordUtils;
 import org.ho.yaml.Yaml;
@@ -315,6 +322,14 @@ public class BaseFakeFactory {
     
 
     public double[] coordinatesLatLng() {
-        return new double[] { RandomUtils.doubleInInterval(random,-90.0d, 90.0d), RandomUtils.doubleInInterval(random,-180.0d, 180.0d) };
+        return new double[] { latitude(), longitude() };
     }
+
+    public double longitude() {
+		return RandomUtils.doubleInInterval(random,-180.0d, 180.0d);
+	}
+
+    public double latitude() {
+		return RandomUtils.doubleInInterval(random,-90.0d, 90.0d);
+	}
 }
