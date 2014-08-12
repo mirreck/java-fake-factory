@@ -147,18 +147,19 @@ public class BaseFakeFactory {
 
         if (obj instanceof List<?>) {
             List<String> list = (List<String>) obj;
-            return evaluatePattern(RandomUtils.randomElement(random,list));
+            return evaluatePattern(RandomUtils.randomElement(random,list), String.class);
         } else if (isWeightMap(obj)) {
             Map<String, Integer> map = (Map<String, Integer>) obj;
-            return evaluatePattern(RandomUtils.randomWeightedElement(random,map));
+            return evaluatePattern(RandomUtils.randomWeightedElement(random,map), String.class);
         } else if (obj instanceof String) {
             String str = (String) obj;
-            return evaluatePattern(str);
+            return evaluatePattern(str, String.class);
         }
         return null;
     }
 
-    public String evaluatePattern(String pattern) {
+    public  <T> T evaluatePattern(String pattern, Class<T> clazz) {
+        Object result = "";
         int prefixIndex = pattern.indexOf(PARAM_PREFIX);
         if (prefixIndex != -1) {
             int suffixIndex = pattern.indexOf(PARAM_SUFFIX, prefixIndex);
@@ -166,17 +167,24 @@ public class BaseFakeFactory {
                 throw new FakeFactoryException("Unmatched prefix/suffix");
             }
             String expression = pattern.substring(prefixIndex + PARAM_PREFIX.length(), suffixIndex);
-            String replacement = evaluate(expression);
-            if (replacement == null) {
-                replacement = evaluateCall(expression);
+            result = evaluate(expression);
+            Object objEvaluation = null;
+            if (result == null) {
+                result = evaluateCall(expression);
             }
-            return evaluatePattern(pattern.substring(0, prefixIndex) + replacement
-                    + pattern.substring(suffixIndex + PARAM_SUFFIX.length()));
+            // return or replace
+            if(result instanceof String){
+                result =   evaluatePattern(pattern.substring(0, prefixIndex) + result
+                        + pattern.substring(suffixIndex + PARAM_SUFFIX.length()), clazz);
+            }
+        } else {
+            result = bothify(pattern);
         }
-        return bothify(pattern);
+
+        return BeanUtils.cast(result, clazz);
     }
 
-    private String evaluateCall(String methodSignature) {
+    private Object evaluateCall(String methodSignature) {
         final String[] signature = methodSignature.split(" ");
 
         String methodName = toCamelCase(signature[0]);
@@ -192,7 +200,7 @@ public class BaseFakeFactory {
 
 
         try {
-            return String.valueOf(method.invoke(this, BeanUtils.matchMethodArgTypes(method, args)));
+            return method.invoke(this, BeanUtils.matchMethodArgTypes(method, args));
         } catch (Exception e) {
             throw new FakeFactoryException("Unable to call method :" + method, e);
         }
@@ -316,7 +324,12 @@ public class BaseFakeFactory {
     public Date date(int minYear, int maxYear){
         DateTime dt = new DateTime()
             .withYear(RandomUtils.intInInterval(random,minYear,maxYear))
-            .withDayOfYear(RandomUtils.intInInterval(random,0,365));
+            .withDayOfYear(RandomUtils.intInInterval(random,0,365))
+            .withHourOfDay(RandomUtils.intInInterval(random,0,24))
+            .withMinuteOfHour(RandomUtils.intInInterval(random,0,60))
+            .withSecondOfMinute(RandomUtils.intInInterval(random,0,60))
+            .withMillisOfSecond(0)
+                ;
         return dt.toDate();
     }
     

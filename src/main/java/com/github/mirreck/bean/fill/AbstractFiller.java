@@ -21,13 +21,13 @@ public abstract class AbstractFiller<T> implements Filler<T> {
 
     @Override
     public String toString() {
-        return "[Filler] property=" + ((writerMethod == null)?"none":writerMethod.getName());
+        return "["+this.getClass().getSimpleName()+"] property=" + ((writerMethod == null)?"none":writerMethod.getName());
     }
 	
     @Override
 	public void apply(T bean) {
     	try {
-    		Object value = BeanUtils.matchType(this.writerMethod.getParameterTypes()[0], generateValue());
+    		Object value = BeanUtils.cast(generateValue(), this.writerMethod.getParameterTypes()[0]);
 			writerMethod.invoke(bean, value);
 		} catch (Exception e) {
             throw new FakeFactoryException("Unable to set property value", e);
@@ -35,5 +35,5 @@ public abstract class AbstractFiller<T> implements Filler<T> {
 		
 	}
 	
-    protected abstract String generateValue();
+    protected abstract Object generateValue();
 }

@@ -15,11 +15,14 @@ public class FakeBeanBuilderTest {
 	@Test
 	public void test() {
 		FakeBeanBuilder<Person> fbb = FakeBeanBuilder.forClass(Person.class)
-			.withParameterConfiguration("job","abc");
+			.withParameterPattern("job", "abc")
+            .withParameterPattern("birthDate", "{{date 1900 2010}}")
+            .withParameterSequence("id");
 		
 		Person person = fbb.build();
-		//assertThat(person.getEyeColor()).isNotNull();
+		assertThat(person.getId()).isNotNull().isPositive();
         assertThat(person.getJob()).isNotEmpty();
+        assertThat(person.getBirthDate()).isNotNull();
         LOGGER.info("bean :" + person);
 	}
 

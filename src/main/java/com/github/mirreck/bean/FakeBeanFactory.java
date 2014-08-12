@@ -21,9 +21,11 @@ import java.util.Map;
 /**
  * Created by thomas.decoster on 11/07/2014.
  */
+@Deprecated
 public class FakeBeanFactory<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FakeBeanFactory.class);
+    public static final String FAKE_CFG_YML = "fake-cfg.yml";
 
     private Map<String, Object> configuration = new HashMap<String, Object>();
 
@@ -43,18 +45,14 @@ public class FakeBeanFactory<T> {
     }
 
 	private Map<String, Object> loadConfiguration(Class<T> targetClass) {
-		final String propertiesFileName = targetClass.getSimpleName() + "-fake-cfg.yml";
-        final InputStream inputStream = targetClass.getResourceAsStream(propertiesFileName);
+        final InputStream inputStream = targetClass.getResourceAsStream(FAKE_CFG_YML);
         if(inputStream != null){
             LOGGER.info("specific configuration");
             final Object yaml = Yaml.load(inputStream);
             if(!(yaml instanceof Map)){
                 throw new FakeFactoryException("Error while loading configuration !");
             }
-            
             return (Map<String, Object>) yaml;
-
-
         } else {
             LOGGER.warn("no configuration found for class {}", targetClass.getName());
             return new HashMap<String, Object>();
@@ -101,17 +99,19 @@ public class FakeBeanFactory<T> {
     }
 
     private Filler filler(PropertyDescriptor propertyDescriptor, Object configuration){
-        if(configuration instanceof Map){
-            // this is an ObjectFiller
-            LOGGER.info("ObjectFiller : {}",configuration);
-            return new NoopFiller();
-        } else if(configuration instanceof List){
-            // this is an ObjectFiller
-            LOGGER.info("List Filler : {}",configuration);
-            return new ValueListFiller(fakeFactory, propertyDescriptor.getWriteMethod(),(List<String>) configuration);
-        } else if(configuration instanceof String){
-            String pattern = (String) configuration;
-            return new PatternFiller(fakeFactory, propertyDescriptor.getWriteMethod(), pattern);
+        if(!(configuration instanceof Map) && !(configuration instanceof List)){
+            if(configuration instanceof String) {
+                if ("sequence".equals(configuration)) {
+                    return new SequenceFiller(propertyDescriptor.getWriteMethod());
+                } else if ("object".equals(configuration)) {
+                    return new RecursiveFiller(fakeFactory, propertyDescriptor);
+                } else {
+                    String pattern = (String) configuration;
+                    return new PatternFiller(fakeFactory, propertyDescriptor.getWriteMethod(), pattern);
+                }
+            } else {
+                return new ValueFiller(propertyDescriptor.getWriteMethod(), configuration);
+            }
         }
         throw new FakeFactoryException("Cannot create filler for "+propertyDescriptor.getName());
     }

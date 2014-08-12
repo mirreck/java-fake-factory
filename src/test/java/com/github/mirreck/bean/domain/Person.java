@@ -7,7 +7,10 @@ import java.util.Date;
  */
 public class Person {
 
-	private String name;	
+
+    private long id;
+
+    private String name;
 	private String firstName;
 	private Date birthDate;
 	private Address address;
@@ -16,7 +19,10 @@ public class Person {
 	private int height;
 	private int weight;
 	private String job;
-	
+
+
+	public Person() {
+	}
 	public String getName() {
 		return name;
 	}
@@ -89,7 +95,27 @@ public class Person {
 		this.job = job;
 	}
 
-	public Person() {
-	}
+    public long getId() {
+        return id;
+    }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", birthDate=" + birthDate +
+                ", address=" + address +
+                ", eyeColor=" + eyeColor +
+                ", hairColor=" + hairColor +
+                ", height=" + height +
+                ", weight=" + weight +
+                ", job='" + job + '\'' +
+                '}';
+    }
 }

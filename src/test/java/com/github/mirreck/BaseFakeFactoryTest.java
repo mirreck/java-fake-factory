@@ -2,6 +2,7 @@ package com.github.mirreck;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.util.Date;
 import java.util.Random;
 
 import org.junit.Before;
@@ -124,6 +125,13 @@ public class BaseFakeFactoryTest {
    @Test
    public void testCoordinates() {
       assertThat(fixedSeedFactory.coordinatesLatLng()).isEqualTo(new double[]{29.526858589007873d, -15.49735707412566d});
-   }      
+   }
+
+    @Test
+    public void testDate() {
+        Date dt = fixedSeedFactory.evaluatePattern("{{date 1900 2010}}",Date.class);
+        assertThat(dt).isEqualTo(new Date(-2044789491000L));
+
+    }
 
 }

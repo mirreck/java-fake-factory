@@ -7,14 +7,14 @@ import java.lang.reflect.Method;
  */
 public class ValueFiller<T> extends AbstractFiller<T> implements Filler<T> {
 
-    private String value;
-    public ValueFiller(Method writerMethod, String value){
+    private Object value;
+    public ValueFiller(Method writerMethod, Object value){
         super(writerMethod);
         this.value = value;
     }
     
 	@Override
-	protected String generateValue() {
+	protected Object generateValue() {
 		return value;
 	}
 
