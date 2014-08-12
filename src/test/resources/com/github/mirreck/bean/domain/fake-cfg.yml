@@ -1,7 +1,7 @@
 com.github.mirreck.bean.domain.Person:
   id: sequence
   name: '{{digits 5}}'
-  job: job
+  job: '{{job}}'
   height: '{{int_in_interval 50 120}}'
   birthDate: '{{date 1950 2010}}'
   eyeColor: GREEN

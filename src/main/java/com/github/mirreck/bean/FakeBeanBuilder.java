@@ -143,6 +143,7 @@ public class FakeBeanBuilder<T> {
         for (String key : extendFactory.keySet()) {
             LOGGER.info("initWithConfigurationFile ff  key:"+key);
         }
+        this.fakeFactory.extendWithMap(extendFactory);
         return this;
     }
 

@@ -70,7 +70,11 @@ public class BaseFakeFactory {
         extendMap(fakeValuesMap, extValuesMap);
         return this;
     }
-    
+
+    public void extendWithMap(Map<String, Object> extMap){
+        extendMap(fakeValuesMap, extMap);
+    }
+
     private void extendMap(Map<String, Object> baseMap, Map<String, Object> extMap){
         Set<Entry<String, Object>> entrySet = extMap.entrySet();
         for (Entry<String, Object> entry : entrySet) {
