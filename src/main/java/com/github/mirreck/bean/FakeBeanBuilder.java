@@ -25,22 +25,17 @@ public class FakeBeanBuilder<T> {
     private Class<T> beanClass;
     private Map<String,Filler<T>> fillers = new HashMap<String,Filler<T>>();
     private FakeFactory fakeFactory;
-    
-	private FakeBeanBuilder(Class<T> beanClass, FakeFactory fakeFactory)  
+    private BeanPool beanPool;
+
+	public <U> FakeBeanBuilder(Class<U> beanClass, FakeFactory fakeFactory, BeanPool beanPool)
     {  
-    	this.beanClass = beanClass;
+    	this.beanClass = (Class<T>) beanClass;
         this.fakeFactory = fakeFactory;
-    }  
-	private FakeBeanBuilder(Class<T> beanClass)  
-    {  
-    	this(beanClass, new FakeFactory());
-    }  
-	
-    public static <U> FakeBeanBuilder<U> forClass(Class<U> clazz){
-    	return new FakeBeanBuilder<U>(clazz);
+        this.beanPool = beanPool;
     }
-    public static <U> FakeBeanBuilder<U> forClass(Class<U> clazz, FakeFactory fakeFactory){
-        return new FakeBeanBuilder<U>(clazz, fakeFactory);
+    public FakeBeanBuilder(Class<T> beanClass)
+    {  
+    	this(beanClass, new FakeFactory(), null);
     }
 
     public List<T> build(int count){
@@ -82,7 +77,7 @@ public class FakeBeanBuilder<T> {
 
     public FakeBeanBuilder<T> withParameterObject(String parameterName) {
         PropertyDescriptor propertyDescriptor = BeanUtils.descriptorForName(parameterName, beanClass);
-        addFiller(parameterName, new RecursiveFiller(this.fakeFactory, propertyDescriptor));
+        addFiller(parameterName, new RecursiveFiller(this.fakeFactory, propertyDescriptor, this.beanPool));
         return this;
     }
 
@@ -116,7 +111,7 @@ public class FakeBeanBuilder<T> {
                 if ("sequence".equals(configuration)) {
                     return new SequenceFiller(propertyDescriptor.getWriteMethod());
                 } else if ("object".equals(configuration)) {
-                    return new RecursiveFiller(fakeFactory, propertyDescriptor);
+                    return new RecursiveFiller(fakeFactory, propertyDescriptor, null);
                 } else {
                     String pattern = (String) configuration;
                     return new PatternFiller(fakeFactory, propertyDescriptor.getWriteMethod(), pattern, propertyDescriptor.getPropertyType());
@@ -128,10 +123,12 @@ public class FakeBeanBuilder<T> {
         throw new FakeFactoryException("Cannot create filler for "+propertyDescriptor.getName());
     }
 
-
     public FakeBeanBuilder<T> initWithConfigurationFile() {
+        return initWithConfigurationFile(FAKE_CFG_YML);
+    }
+    public FakeBeanBuilder<T> initWithConfigurationFile(String resourcePath) {
 
-        final Map<String, Object> conf = YamlUtils.loadYamlResource(beanClass, FAKE_CFG_YML, new HashMap<String, Object>());
+        final Map<String, Object> conf = YamlUtils.loadYamlResource(beanClass, resourcePath, new HashMap<String, Object>());
         // bean fields
         final Map<String, Object> beanConfiguration = YamlUtils.fetchMap(conf, beanClass.getName());
         for (String key : beanConfiguration.keySet()) {

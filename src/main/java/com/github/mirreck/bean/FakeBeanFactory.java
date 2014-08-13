@@ -104,7 +104,7 @@ public class FakeBeanFactory<T> {
                 if ("sequence".equals(configuration)) {
                     return new SequenceFiller(propertyDescriptor.getWriteMethod());
                 } else if ("object".equals(configuration)) {
-                    return new RecursiveFiller(fakeFactory, propertyDescriptor);
+                    return new RecursiveFiller(fakeFactory, propertyDescriptor, null);
                 } else {
                     String pattern = (String) configuration;
                     return new PatternFiller(fakeFactory, propertyDescriptor.getWriteMethod(), pattern);
