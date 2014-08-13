@@ -2,12 +2,16 @@ package com.github.mirreck.bean;
 
 import static org.fest.assertions.Assertions.*;
 
+import com.github.mirreck.FakeFactory;
+import com.github.mirreck.bean.domain.Task;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mirreck.bean.domain.Person;
+
+import java.util.Random;
 
 public class FakeBeanBuilderTest {
 
@@ -65,4 +69,25 @@ public class FakeBeanBuilderTest {
         LOGGER.info("bean :" + person);
     }
 
+
+    @Test
+    public void should_build_with_pooled_objects_configuration() {
+        final FakeFactory fakeFactory = new FakeFactory();
+
+        final BeanPool beanPool = new BeanPool(fakeFactory.getRandom());
+
+        FakeBeanBuilder<Task> fbbt = new FakeBeanBuilder<Task>(Task.class, fakeFactory, beanPool)
+                .initWithConfigurationFile();
+
+        FakeBeanBuilder<Person> fbbp = new FakeBeanBuilder<Person>(Person.class, fakeFactory, beanPool)
+                .initWithConfigurationFile()
+                .withParameterPool("task");
+
+        fbbt.build(5);
+        Person person = fbbp.build();
+
+
+        assertThat(person.getTask()).isNotNull();
+        LOGGER.info("bean :" + person);
+    }
 }

@@ -53,6 +53,9 @@ public class FakeBeanBuilder<T> {
 
 				filler.apply(bean);
 			}
+            if(beanPool != null) {
+                beanPool.add(bean);
+            }
 			return bean;
 		} catch (InstantiationException e) {
 			throw new FakeFactoryException("can not create fake bean", e);
@@ -78,6 +81,12 @@ public class FakeBeanBuilder<T> {
     public FakeBeanBuilder<T> withParameterObject(String parameterName) {
         PropertyDescriptor propertyDescriptor = BeanUtils.descriptorForName(parameterName, beanClass);
         addFiller(parameterName, new RecursiveFiller(this.fakeFactory, propertyDescriptor, this.beanPool));
+        return this;
+    }
+
+    public FakeBeanBuilder<T> withParameterPool(String parameterName) {
+        PropertyDescriptor propertyDescriptor = BeanUtils.descriptorForName(parameterName, beanClass);
+        addFiller(parameterName, new PoolFiller(propertyDescriptor.getWriteMethod(), this.beanPool));
         return this;
     }
 

@@ -20,6 +20,15 @@ public class Person {
 	private int weight;
 	private String job;
 
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    private Task task;
 
 	public Person() {
 	}
@@ -116,6 +125,7 @@ public class Person {
                 ", height=" + height +
                 ", weight=" + weight +
                 ", job='" + job + '\'' +
+                ", task=" + task +
                 '}';
     }
 }

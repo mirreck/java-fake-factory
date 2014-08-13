@@ -9,6 +9,9 @@ com.github.mirreck.bean.domain.Person:
 com.github.mirreck.bean.domain.Address:
   city: city
   country:'{{country}}'
+com.github.mirreck.bean.domain.Task:
+  name: '{{digits 10}}'
+  dueDate:'{{date 2013 2017}}'
 extend :
   faker :
     job : [ Manager, Tester, Employee]
