@@ -10,15 +10,16 @@ import java.lang.reflect.Method;
 public class PoolFiller<T> extends AbstractFiller<T> implements Filler<T> {
 
     private BeanPool pool;
-    public PoolFiller(Method writerMethod, BeanPool pool){
+
+    public PoolFiller(Method writerMethod, BeanPool pool) {
         super(writerMethod);
         this.pool = pool;
     }
-    
-	@Override
-	protected Object generateValue() {
-		return pool.pick(writerMethod.getParameterTypes()[0]);
-	}
+
+    @Override
+    protected Object generateValue() {
+        return pool.pick(writerMethod.getParameterTypes()[0]);
+    }
 
 
 }

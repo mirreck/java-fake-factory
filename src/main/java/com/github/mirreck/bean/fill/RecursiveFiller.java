@@ -5,7 +5,6 @@ import com.github.mirreck.bean.BeanPool;
 import com.github.mirreck.bean.FakeBeanBuilder;
 
 import java.beans.PropertyDescriptor;
-import java.util.Map;
 
 /**
  * Created by thomas.decoster on 11/08/2014.
@@ -16,7 +15,7 @@ public class RecursiveFiller<T> extends AbstractFiller<T> {
 
     public RecursiveFiller(FakeFactory fakeFactory, PropertyDescriptor propertyDescriptor, BeanPool beanPool) {
         super(propertyDescriptor.getWriteMethod());
-        fakeBeanBuilder = new FakeBeanBuilder(propertyDescriptor.getPropertyType(),fakeFactory, beanPool);
+        fakeBeanBuilder = new FakeBeanBuilder(propertyDescriptor.getPropertyType(), fakeFactory, beanPool);
         fakeBeanBuilder.initWithConfigurationFile();
     }
 

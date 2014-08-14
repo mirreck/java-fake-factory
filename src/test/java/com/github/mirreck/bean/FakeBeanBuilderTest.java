@@ -21,14 +21,18 @@ public class FakeBeanBuilderTest {
 	@Test
 	public void should_build_with_given_configuration() {
 		FakeBeanBuilder<Person> fbb = new FakeBeanBuilder<Person>(Person.class)
+            .withParameterSequence("id")
 			.withParameterPattern("job", "abc")
-            .withParameterPattern("birthDate", "{{date 1900 2010}}")
-            .withParameterSequence("id");
+            .withParameterPattern("birthDate", "{{date 1900 2010}}");
 		
 		Person person = fbb.build();
+        // filled
 		assertThat(person.getId()).isNotNull().isPositive();
-        assertThat(person.getJob()).isNotEmpty();
+        assertThat(person.getJob()).isNotEmpty().isEqualTo("abc");
         assertThat(person.getBirthDate()).isNotNull();
+
+        // NOT filled
+        assertThat(person.getAddress()).isNull();
         LOGGER.info("bean :" + person);
 	}
 
@@ -41,6 +45,8 @@ public class FakeBeanBuilderTest {
         assertThat(person.getId()).isNotNull().isPositive();
         assertThat(person.getJob()).isNotEmpty();
         assertThat(person.getBirthDate()).isNotNull();
+        assertThat(person.getAddress()).isNotNull();
+
         LOGGER.info("bean :" + person);
     }
 
@@ -53,6 +59,7 @@ public class FakeBeanBuilderTest {
         assertThat(person.getId()).isNotNull().isPositive();
         assertThat(person.getJob()).isNotEmpty();
         assertThat(person.getBirthDate()).isNotNull();
+        assertThat(person.getAddress()).isNotNull();
         LOGGER.info("bean :" + person);
     }
 
@@ -76,15 +83,15 @@ public class FakeBeanBuilderTest {
 
         final BeanPool beanPool = new BeanPool(fakeFactory.getRandom());
 
-        FakeBeanBuilder<Task> fbbt = new FakeBeanBuilder<Task>(Task.class, fakeFactory, beanPool)
+        FakeBeanBuilder<Task> taskBuilder = new FakeBeanBuilder<Task>(Task.class, fakeFactory, beanPool)
                 .initWithConfigurationFile();
 
-        FakeBeanBuilder<Person> fbbp = new FakeBeanBuilder<Person>(Person.class, fakeFactory, beanPool)
+        FakeBeanBuilder<Person> personBuilder = new FakeBeanBuilder<Person>(Person.class, fakeFactory, beanPool)
                 .initWithConfigurationFile()
                 .withParameterPool("task");
 
-        fbbt.build(5);
-        Person person = fbbp.build();
+        taskBuilder.build(5);
+        Person person = personBuilder.build();
 
 
         assertThat(person.getTask()).isNotNull();

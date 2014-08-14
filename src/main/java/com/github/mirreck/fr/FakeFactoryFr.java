@@ -1,9 +1,9 @@
 package com.github.mirreck.fr;
 
+import com.github.mirreck.FakeFactory;
+
 import java.util.Locale;
 import java.util.Random;
-
-import com.github.mirreck.FakeFactory;
 
 public class FakeFactoryFr extends FakeFactory {
    public FakeFactoryFr() {

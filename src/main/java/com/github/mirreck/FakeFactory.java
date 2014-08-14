@@ -1,11 +1,10 @@
 package com.github.mirreck;
 
-import java.util.Locale;
-import java.util.Random;
-
+import com.github.mirreck.domain.Gender;
 import org.apache.commons.lang.WordUtils;
 
-import com.github.mirreck.domain.Gender;
+import java.util.Locale;
+import java.util.Random;
 
 public class FakeFactory extends BaseFakeFactory {
 

@@ -1,13 +1,9 @@
 package com.github.mirreck;
 
-import static org.apache.commons.lang.math.RandomUtils.nextInt;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
+
+import static org.apache.commons.lang.math.RandomUtils.nextInt;
 
 public class RandomUtils {
 

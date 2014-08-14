@@ -1,27 +1,20 @@
 package com.github.mirreck;
 
-import static org.apache.commons.lang.StringUtils.capitalize;
-import static org.apache.commons.lang.StringUtils.join;
-import static org.apache.commons.lang.math.RandomUtils.nextInt;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-
 import org.apache.commons.lang.WordUtils;
 import org.ho.yaml.Yaml;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.apache.commons.lang.StringUtils.capitalize;
+import static org.apache.commons.lang.StringUtils.join;
+import static org.apache.commons.lang.math.RandomUtils.nextInt;
+
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class BaseFakeFactory {
     private static final String ROOT_ELEMENT = "faker";
 
@@ -29,18 +22,11 @@ public class BaseFakeFactory {
 
     private static final String PARAM_PREFIX = "{{";
     private static final String PARAM_SUFFIX = "}}";
-    private static final char[] METHOD_NAME_DELIMITERS = { '_' };
+    private static final char[] METHOD_NAME_DELIMITERS = {'_'};
     private static final String DIGITS = "0123456789";
     private static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
-
-
-    private Map<String, Object> fakeValuesMap;
-
-    public Random getRandom() {
-        return random;
-    }
-
     protected final Random random;
+    private Map<String, Object> fakeValuesMap;
 
     public BaseFakeFactory(Locale locale) {
         this(locale, new Random());
@@ -58,12 +44,27 @@ public class BaseFakeFactory {
         this.extend(locale);
     }
 
+    private static boolean isWeightMap(Object obj) {
+        if (!(obj instanceof Map<?, ?>)) {
+            return false;
+        }
+        Map<?, ?> map = (Map<?, ?>) obj;
+        if (map.isEmpty()) {
+            return false;
+        }
+        return map.keySet().iterator().next() instanceof String && map.values().iterator().next() instanceof Integer;
+    }
+
+    public Random getRandom() {
+        return random;
+    }
+
     protected BaseFakeFactory extend(Locale locale) {
         return extend(locale.getLanguage());
     }
 
     protected BaseFakeFactory extend(String localeExtension) {
-        LOGGER.debug("Using locale : {}",localeExtension);
+        LOGGER.debug("Using locale : {}", localeExtension);
         Map<String, Object> valuesMap = (Map<String, Object>) Yaml.load(BaseFakeFactory.class.getResourceAsStream(localeExtension + ".yml"));
         valuesMap = (Map<String, Object>) valuesMap.get(localeExtension);
         Map<String, Object> extValuesMap = (Map<String, Object>) valuesMap.get(ROOT_ELEMENT);
@@ -71,29 +72,26 @@ public class BaseFakeFactory {
         return this;
     }
 
-    public void extendWithMap(Map<String, Object> extMap){
+    public void extendWithMap(Map<String, Object> extMap) {
         extendMap(fakeValuesMap, extMap);
     }
 
-    private void extendMap(Map<String, Object> baseMap, Map<String, Object> extMap){
+    private void extendMap(Map<String, Object> baseMap, Map<String, Object> extMap) {
         Set<Entry<String, Object>> entrySet = extMap.entrySet();
         for (Entry<String, Object> entry : entrySet) {
-            if(!(entry.getValue() instanceof Map) ){
+            if (!(entry.getValue() instanceof Map)) {
                 baseMap.put(entry.getKey(), entry.getValue());
             } else {
                 Map<String, Object> object = (Map<String, Object>) baseMap.get(entry.getKey());
-                if(object == null){
+                if (object == null) {
                     baseMap.put(entry.getKey(), entry.getValue());
                 } else {
                     extendMap(object, (Map<String, Object>) entry.getValue());
                 }
-                
+
             }
         }
     }
-
-
-
 
     private Object fetchObject(String key) {
         String[] path = key.split("\\.");
@@ -131,17 +129,6 @@ public class BaseFakeFactory {
         return (List<Object>) obj;
     }
 
-    private static boolean isWeightMap(Object obj) {
-        if (!(obj instanceof Map<?, ?>)) {
-            return false;
-        }
-        Map<?, ?> map = (Map<?, ?>) obj;
-        if (map.isEmpty()) {
-            return false;
-        }
-        return map.keySet().iterator().next() instanceof String && map.values().iterator().next() instanceof Integer;
-    }
-
     protected String evaluate(String key) {
         Object obj = fetchObject(key);
         return evaluateObject(obj);
@@ -151,10 +138,10 @@ public class BaseFakeFactory {
 
         if (obj instanceof List<?>) {
             List<String> list = (List<String>) obj;
-            return evaluatePattern(RandomUtils.randomElement(random,list), String.class);
+            return evaluatePattern(RandomUtils.randomElement(random, list), String.class);
         } else if (isWeightMap(obj)) {
             Map<String, Integer> map = (Map<String, Integer>) obj;
-            return evaluatePattern(RandomUtils.randomWeightedElement(random,map), String.class);
+            return evaluatePattern(RandomUtils.randomWeightedElement(random, map), String.class);
         } else if (obj instanceof String) {
             String str = (String) obj;
             return evaluatePattern(str, String.class);
@@ -162,7 +149,7 @@ public class BaseFakeFactory {
         return null;
     }
 
-    public  <T> T evaluatePattern(String pattern, Class<T> clazz) {
+    public <T> T evaluatePattern(String pattern, Class<T> clazz) {
         Object result = "";
         int prefixIndex = pattern.indexOf(PARAM_PREFIX);
         if (prefixIndex != -1) {
@@ -172,13 +159,12 @@ public class BaseFakeFactory {
             }
             String expression = pattern.substring(prefixIndex + PARAM_PREFIX.length(), suffixIndex);
             result = evaluate(expression);
-            Object objEvaluation = null;
             if (result == null) {
                 result = evaluateCall(expression);
             }
             // return or replace
-            if(result instanceof String){
-                result =   evaluatePattern(pattern.substring(0, prefixIndex) + result
+            if (result instanceof String) {
+                result = evaluatePattern(pattern.substring(0, prefixIndex) + result
                         + pattern.substring(suffixIndex + PARAM_SUFFIX.length()), clazz);
             }
         } else {
@@ -196,12 +182,11 @@ public class BaseFakeFactory {
         Method method;
         try {
             method = BeanUtils.findMethod(this.getClass(), methodName, signature.length - 1);
-        } catch (FakeFactoryException e){
+        } catch (FakeFactoryException e) {
             LOGGER.info("Method not found in this Factory, Search in RandomUtils");
             method = BeanUtils.findMethod(RandomUtils.class, methodName, signature.length - 1);
         }
         final String[] args = Arrays.copyOfRange(signature, 1, signature.length);
-
 
         try {
             return method.invoke(this, BeanUtils.matchMethodArgTypes(method, args));
@@ -209,7 +194,6 @@ public class BaseFakeFactory {
             throw new FakeFactoryException("Unable to call method :" + method, e);
         }
     }
-
 
 
     protected String[] evaluateMultipleLines(String key) {
@@ -244,7 +228,7 @@ public class BaseFakeFactory {
         }
         return sb.toString();
     }
-    
+
     public String numerify(String numberString) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < numberString.length(); i++) {
@@ -324,29 +308,27 @@ public class BaseFakeFactory {
     }
 
 
-    
-    public Date date(int minYear, int maxYear){
+    public Date date(int minYear, int maxYear) {
         DateTime dt = new DateTime()
-            .withYear(RandomUtils.intInInterval(random,minYear,maxYear))
-            .withDayOfYear(RandomUtils.intInInterval(random,0,365))
-            .withHourOfDay(RandomUtils.intInInterval(random,0,24))
-            .withMinuteOfHour(RandomUtils.intInInterval(random,0,60))
-            .withSecondOfMinute(RandomUtils.intInInterval(random,0,60))
-            .withMillisOfSecond(0)
-                ;
+                .withYear(RandomUtils.intInInterval(random, minYear, maxYear))
+                .withDayOfYear(RandomUtils.intInInterval(random, 0, 365))
+                .withHourOfDay(RandomUtils.intInInterval(random, 0, 24))
+                .withMinuteOfHour(RandomUtils.intInInterval(random, 0, 60))
+                .withSecondOfMinute(RandomUtils.intInInterval(random, 0, 60))
+                .withMillisOfSecond(0);
         return dt.toDate();
     }
-    
+
 
     public double[] coordinatesLatLng() {
-        return new double[] { latitude(), longitude() };
+        return new double[]{latitude(), longitude()};
     }
 
     public double longitude() {
-		return RandomUtils.doubleInInterval(random,-180.0d, 180.0d);
-	}
+        return RandomUtils.doubleInInterval(random, -180.0d, 180.0d);
+    }
 
     public double latitude() {
-		return RandomUtils.doubleInInterval(random,-90.0d, 90.0d);
-	}
+        return RandomUtils.doubleInInterval(random, -90.0d, 90.0d);
+    }
 }

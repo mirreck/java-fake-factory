@@ -1,6 +1,5 @@
 package com.github.mirreck.bean;
 
-import com.github.mirreck.FakeFactory;
 import com.github.mirreck.RandomUtils;
 
 import java.util.*;
