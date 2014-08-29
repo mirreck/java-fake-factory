@@ -5,6 +5,16 @@ inspired by the Ruby library Faker
 
 This library provides methods to fill your beans with fake values.
 
+Latest version : 1.0.2
+
+```xml
+<dependency>
+    <groupId>com.github.mirreck</groupId>
+    <artifactId>java-fake-factory</artifactId>
+    <version>1.0.2</version>
+</dependency>
+```
+
 ## Basic Usage
 
 
